@@ -32,14 +32,15 @@ To get the microservice running on your local machine, follow these steps:
 2. **Build the Docker Containers**
 This command builds the Docker images and starts the containers, including the Rails application and the PostgreSQL database.
 
-    ```docker-compose up --build
-    ```
+    ```bash
+    docker-compose up --build
+    
 
 3. **Database Setup**
 After the containers are up, set up the database with the following command:
 
-    ```docker-compose run web rake db:create db:migrate
-    ```
+    docker-compose run web rake db:create db:migrate
+    
 
 ## Testing the Microservice
 

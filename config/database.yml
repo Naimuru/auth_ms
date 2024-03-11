@@ -83,3 +83,4 @@ production:
   database: apollo_api_production
   username: apollo_api
   password: <%= ENV["APOLLO_API_DATABASE_PASSWORD"] %>
+  host: db
