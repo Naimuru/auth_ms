@@ -1,56 +1,34 @@
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+# Use official Ruby image as the base image
 ARG RUBY_VERSION=3.3.0
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+FROM ruby:$RUBY_VERSION-slim as base
 
-# Rails app lives here
+# Set working directory
 WORKDIR /rails
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development test"
+# Set environment variables
+ENV RAILS_ENV=production \
+    BUNDLE_WITHOUT=development:test
 
-# Throw-away build stage to reduce the size of the final image
-FROM base as build
+# Install system dependencies
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs yarn curl libvips postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install packages needed to build gems and other dependencies
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
-
-# Install application gems
+# Install Gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --without development test && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle install
 
-# Copy application code
+# Copy the application code
 COPY . .
 
-# Precompile assets and bootsnap code for faster boot times
-RUN bundle exec rake assets:precompile && \
-    bundle exec bootsnap precompile app/ lib/
+# Precompile assets
+RUN bundle exec rake assets:precompile
 
-# Final stage for app image
-FROM base
+# Non-root user for security
+RUN useradd -m rails && chown -R rails:rails /rails
+USER rails
 
-# Install runtime packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
-
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER rails:rails
-
-# Prepare the database (Assuming you have a script to handle this)
-# ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
+# Expose port 3000
 EXPOSE 3000
+
+# Start the Rails app
 CMD ["rails", "server", "-b", "0.0.0.0"]
