@@ -20,9 +20,6 @@ RUN bundle install
 # Copy the application code
 COPY . .
 
-# Precompile assets
-RUN bundle exec rake assets:precompile
-
 # Non-root user for security
 RUN useradd -m rails && chown -R rails:rails /rails
 USER rails
