@@ -1,13 +1,4 @@
-# PostgreSQL. Versions 9.3 and up are supported.
-#
-# Install the pg driver:
-#   gem install pg
-# On macOS with Homebrew:
-#   gem install pg -- --with-pg-config=/usr/local/bin/pg_config
-#
-# Configure Using Gemfile
-# gem "pg"
-#
+
 default: &default
   adapter: postgresql
   encoding: unicode
