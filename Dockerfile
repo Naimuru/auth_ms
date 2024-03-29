@@ -6,8 +6,8 @@ FROM ruby:$RUBY_VERSION-slim as base
 WORKDIR /rails
 
 # Set environment variables
-ENV RAILS_ENV=production \
-    BUNDLE_WITHOUT=development:test
+#ENV RAILS_ENV=production \
+#    BUNDLE_WITHOUT=development:test
 
 # Install system dependencies
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs yarn curl libvips postgresql-client && \
