@@ -14,7 +14,7 @@ module Api
           resource.save
           if resource.persisted?
             if resource.active_for_authentication?
-              render json: { message: 'Signed up successfully.', user: resource }, status: :created
+              render json: { message: 'Signed up successfully.', user: resource_data }, status: :created
             else
               render json: { message: "Signed up but #{resource.inactive_message}" }, status: :ok
             end
@@ -25,6 +25,10 @@ module Api
   
         private
   
+        def resource_data
+          resource.as_json(except: [:emailAddr, :userName])
+        end
+
         def respond_with(resource, _opts = {})
           render json: resource
         end
