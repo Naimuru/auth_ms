@@ -1,4 +1,3 @@
-
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -10,6 +9,9 @@ default: &default
 development:
   <<: *default
   database: apollo_api_development
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: db
 
 test:
   <<: *default
