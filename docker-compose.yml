@@ -5,17 +5,22 @@ services:
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
     environment:
+      POSTGRES_DB: apollo_api_development
+      POSTGRES_USER: naimu
       POSTGRES_PASSWORD: password
 
   web:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -p 3000 -b '0.0.0.0'"
     volumes:
-      - .:/myapp
+      - .:/rails
     ports:
       - "3000:3000"
     environment:
-      RAILS_ENV: production
+      RAILS_ENV: development
       SECRET_KEY_BASE: b5fd37d1625555cc045316c41551d68ad20b8c59107d45bd1fc3654aba6dd7eb186a2b20cba71236f659aa2afc0e77e54e36f46d0d3a2f36d8d0e187c063ac8d
+      DATABASE_HOST: db
+      DATABASE_USER: naimu
+      DATABASE_PASSWORD: password
     depends_on:
       - db

@@ -9,7 +9,7 @@ module Api
         def create
           self.resource = warden.authenticate!(auth_options)
           sign_in(resource_name, resource)
-          render json: { success: true, message: 'Signed in successfully.', user: resource }, status: :ok
+          render json: { success: true, message: 'Signed in successfully.', user:  resource_data }, status: :ok
         end
   
         def destroy
@@ -23,6 +23,10 @@ module Api
   
         private
   
+        def resource_data
+          resource.as_json(except: [:emailAddr, :userName])
+        end
+        
         def prepare_response_format
           request.format = :json
         end
